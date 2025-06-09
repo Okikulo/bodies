@@ -28,6 +28,10 @@ OMP_EXECUTABLE = $(BIN_DIR)/nbody_simulation_omp
 # Default target - build both executables
 all: $(SERIAL_EXECUTABLE) $(OMP_EXECUTABLE)
 
+version:
+	@echo "Generating version header..."
+	@./scripts/generate_version.sh
+
 # Serial executable
 serial: $(SERIAL_EXECUTABLE)
 

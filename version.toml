@@ -1,0 +1,7 @@
+[project]
+name = "bodies"
+version = "0.0.1"
+description = "Fast Parallel 2D N-Body Simulation using C++, SFML and OpenMP"
+
+[build]
+date = "2025-06-09"
