@@ -1,6 +1,6 @@
 # bodies
 
-![](resources/bodies.gif)
+![](resources/big_bodies.gif)
 
 # Dependencies 
 - SFML 2.6.1
