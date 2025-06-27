@@ -1,0 +1,11 @@
+Implementation,NumBodies,AverageFPS
+Serial,250,583.09
+OpenMP,250,547.12
+OpenMP,5000,32.02
+OpenMP,3000,48.30
+Serial,250,836.20
+OpenMP,2000,121.21
+OpenMP,3000,75.79
+OpenMP,2000,122.21
+OpenMP,2000,118.18
+OpenMP,2000,121.36

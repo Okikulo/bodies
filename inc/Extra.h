@@ -65,6 +65,12 @@ private:
     float& softening;
     const float G;
     const unsigned int windowWidth, windowHeight;
+    static constexpr float ZOOM_SENSITIVITY = 0.1f;  // Adjust for smoother/faster zoom
+    static constexpr float MIN_ZOOM = 0.1f;
+    static constexpr float MAX_ZOOM = 3.0f;
+    bool isPanning = false;
+    sf::Vector2f lastMouseWorldPos;
+    sf::Vector2i lastMousePixelPos;
 
 public:
     InputHandler(bool& trails, int& bodies, float& timeStep, float& soft, 

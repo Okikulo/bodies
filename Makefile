@@ -1,6 +1,6 @@
 # Compiler settings
 CXX = g++
-CXXFLAGS_BASE = -Wall -Wextra -std=c++17 -Iinc -O3 -march=native -ffast-math
+CXXFLAGS_BASE = -Wall -g -Wextra -std=c++17 -Iinc -O3 -march=native -ffast-math
 CXXFLAGS_SERIAL = $(CXXFLAGS_BASE)
 CXXFLAGS_OMP = $(CXXFLAGS_BASE) -fopenmp
 LDFLAGS_BASE = -lsfml-graphics -lsfml-window -lsfml-system

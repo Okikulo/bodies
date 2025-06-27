@@ -146,6 +146,8 @@ int main(int argc, char* argv[]) {
                 window.draw(circle);
             }
         }
+
+        window.setView(window.getDefaultView());
         
         // Draw UI
         uiManager.draw(window);

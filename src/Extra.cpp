@@ -42,7 +42,7 @@ UIManager::UIManager(unsigned int windowWidth, unsigned int windowHeight) : hide
     controlsText.setCharacterSize(12);
     controlsText.setFillColor(sf::Color::White);
     controlsText.setPosition(10, windowHeight - 156);
-    controlsText.setString("Space to hide interface\nR to reset with random bodies\nT to toggle trails\nF to increase time step\nS to decrease time step\n+ to add 100 more bodies\n- to remove 100 bodies\nH to increase softening\nK to decrease softening\nESC to exit");
+    controlsText.setString("Mouse Right-click + drag to pan\nScroll to zoom\nSpace to hide interface\nR to reset with random bodies\nT to toggle trails\nF to increase time step\nS to decrease time step\n+ to add 100 more bodies\n- to remove 100 bodies\nH to increase softening\nK to decrease softening\nESC to exit");
 
     fpsText.setCharacterSize(12);
     fpsText.setFillColor(sf::Color::White);
@@ -105,6 +105,72 @@ bool InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
         window.close();
         return true;
     }
+
+    // Mouse button events for panning
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            isPanning = true;
+            lastMousePixelPos = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
+            window.setView(view);
+            lastMouseWorldPos = window.mapPixelToCoords(lastMousePixelPos);
+        }
+    }
+    
+    if (event.type == sf::Event::MouseButtonReleased) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            isPanning = false;
+        }
+    }
+    
+    // Mouse move event for panning
+    if (event.type == sf::Event::MouseMoved && isPanning) {
+        sf::Vector2i currentMousePixelPos(event.mouseMove.x, event.mouseMove.y);
+        window.setView(view);
+        sf::Vector2f currentMouseWorldPos = window.mapPixelToCoords(currentMousePixelPos);
+        
+        // Calculate the difference in world coordinates
+        sf::Vector2f delta = lastMouseWorldPos - currentMouseWorldPos;
+        
+        // Move the view by the delta
+        view.move(delta);
+        
+        // Update last positions for next frame
+        lastMousePixelPos = currentMousePixelPos;
+        lastMouseWorldPos = window.mapPixelToCoords(currentMousePixelPos);
+    }
+    
+    // Enhanced zoom with cursor following
+    if (event.type == sf::Event::MouseWheelScrolled) {
+        // Get mouse position in window coordinates
+        sf::Vector2i mousePixelPos = sf::Mouse::getPosition(window);
+        
+        // Ensure we're using the current view
+        window.setView(view);
+        
+        // Get world position before zoom
+        sf::Vector2f mouseWorldPosBefore = window.mapPixelToCoords(mousePixelPos);
+        
+        // Calculate zoom factor with sensitivity
+        float zoomDirection = (event.mouseWheelScroll.delta > 0) ? -1.0f : 1.0f;
+        float zoomFactor = 1.0f + (zoomDirection * ZOOM_SENSITIVITY);
+        
+        // Check if zoom would exceed limits
+        float newZoomLevel = zoomLevel * zoomFactor;
+        if (newZoomLevel < MIN_ZOOM || newZoomLevel > MAX_ZOOM) {
+            return false; // Don't zoom if it would exceed limits
+        }
+        
+        // Apply zoom
+        view.zoom(zoomFactor);
+        zoomLevel = newZoomLevel;
+        
+        // Get world position after zoom
+        sf::Vector2f mouseWorldPosAfter = window.mapPixelToCoords(mousePixelPos);
+        
+        // Calculate and apply offset to keep cursor position fixed
+        sf::Vector2f offset = mouseWorldPosBefore - mouseWorldPosAfter;
+        view.move(offset);
+    }
     
     if (event.type == sf::Event::KeyPressed) {
         auto resetSimulation = [&]() {
@@ -165,23 +231,6 @@ bool InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
                 showTrails = trailManager.isEnabled();
                 break;
         }
-    }
-    else if (event.type == sf::Event::MouseWheelScrolled) {
-        // Handle zoom
-        sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
-        sf::Vector2f beforeCoord = window.mapPixelToCoords(pixelPos);
-
-        float zoomChange = (event.mouseWheelScroll.delta > 0) ? 0.9f : 1.1f;
-        float proposedZoomLevel = zoomLevel * zoomChange;
-        float clampedZoomLevel = std::clamp(proposedZoomLevel, 0.2f, 1.0f);
-        float zoomFactor = clampedZoomLevel / zoomLevel;
-        
-        view.zoom(zoomFactor);
-        zoomLevel = clampedZoomLevel;
-
-        sf::Vector2f afterCoord = window.mapPixelToCoords(pixelPos);
-        sf::Vector2f offset = beforeCoord - afterCoord;
-        view.move(offset);
     }
     
     return false;
