@@ -38,23 +38,74 @@ std::string detectImplementation(const std::string& binaryPath) {
     }
 }
 
+void printUsage(const char* programName) {
+    std::cout << "Usage: " << programName << " [numBodies] [dt] [softening]\n";
+    std::cout << "  numBodies: Number of bodies in simulation (default: 1000, min: 2)\n";
+    std::cout << "  dt:        Time step for simulation (default: 0.001, min: 0.0001)\n";
+    std::cout << "  softening: Softening parameter (default: 2.0, min: 0.1)\n";
+    std::cout << "Example: " << programName << " 500 0.005 1.5\n";
+}
+
 int main(int argc, char* argv[]) {
     // Automatically detect implementation from binary name
     std::string implementation = detectImplementation(argv[0]);
     
     // Parse command line arguments
-    int numBodies = 250;
+    int numBodies = 1000;
+    float softening = 2.0f;
+    float dt = 0.001f;
     
     if (argc > 1) {
+        // Show help if requested
+        if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help") {
+            printUsage(argv[0]);
+            return 0;
+        }
+        
+        // Parse numBodies
         try {
             numBodies = std::stoi(argv[1]);
             if (numBodies <= 1) {
-                std::cout << "Number of bodies must be at least 2. Using default: 100" << std::endl;
-                numBodies = 100;
+                std::cout << "Number of bodies must be at least 2. Using default: 1000" << std::endl;
+                numBodies = 1000;
             }
         } catch (const std::exception& e) {
-            std::cout << "Invalid number of bodies. Using default: 100" << std::endl;
-            numBodies = 100;
+            std::cout << "Invalid number of bodies. Using default: 1000" << std::endl;
+            numBodies = 1000;
+        }
+    }
+    
+    if (argc > 2) {
+        // Parse dt
+        try {
+            dt = std::stof(argv[2]);
+            if (dt < 0.0001f) {
+                std::cout << "Time step too small (min: 0.0001). Using default: 0.001" << std::endl;
+                dt = 0.001f;
+            } else if (dt > 1.0f) {
+                std::cout << "Time step too large (max: 1.0). Using default: 0.001" << std::endl;
+                dt = 0.001f;
+            }
+        } catch (const std::exception& e) {
+            std::cout << "Invalid time step. Using default: 0.001" << std::endl;
+            dt = 0.001f;
+        }
+    }
+    
+    if (argc > 3) {
+        // Parse softening
+        try {
+            softening = std::stof(argv[3]);
+            if (softening < 0.1f) {
+                std::cout << "Softening too small (min: 0.1). Using default: 2.0" << std::endl;
+                softening = 2.0f;
+            } else if (softening > 100.0f) {
+                std::cout << "Softening too large (max: 100.0). Using default: 2.0" << std::endl;
+                softening = 2.0f;
+            }
+        } catch (const std::exception& e) {
+            std::cout << "Invalid softening parameter. Using default: 2.0" << std::endl;
+            softening = 2.0f;
         }
     }
    
@@ -64,8 +115,6 @@ int main(int argc, char* argv[]) {
     const float G = 1.0f;
     
     // Simulation parameters
-    float softening = 2.0f;
-    float dt = 0.001f;
     bool showTrails = false;
     float zoomLevel = 1.0f;
     
