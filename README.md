@@ -14,7 +14,7 @@ sudo apt install libsfml-dev
 # Fedora
 sudo dnf install SFML-devel
 ```
-#Usage
+# Usage
 ```bash
 ./bin/nbody_simulation_serial [numBodies] [dt] [softening]
 ```
