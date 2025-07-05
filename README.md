@@ -9,7 +9,7 @@
 sudo pacman -S sfml
 # or if already have sfml installed, use downgrade and choose version 2.6.1
 yay -S downgrade
-sudo downgrade smfl
+sudo downgrade sfml
 # Ubuntu/Debian
 sudo apt install libsfml-dev
 
